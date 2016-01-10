@@ -14,13 +14,13 @@ with System,
 use Ada.Text_IO;
 
 with nanomsg_nn_h;
-use nanomsg_nn_h;
-
-use Interfaces.C,
-   Interfaces.C.Strings;
 
 procedure Pipeline is
    pragma Linker_Options ("-lnanomsg");
+
+   use nanomsg_nn_h;
+   use Interfaces.C,
+      Interfaces.C.Strings;
 
    NN_PROTO_PIPELINE : constant := 5;
    NN_PULL : constant := (NN_PROTO_PIPELINE * 16 + 1);
@@ -33,7 +33,7 @@ begin
    Put_Line ("Socket " & int'Image (Socket));
 
    Status := nn_bind (Socket,
-                      New_String ("ipc:///tmp/pipeline.ipc"));
+                      New_String ("tcp://127.0.0.1:5019"));
 
    Put_Line ("Status: " & int'Image (Socket));
 
@@ -43,18 +43,16 @@ begin
    begin
       loop
          Bytes := Integer (nn_recv (Socket, Buf, NN_MSG, 0));
-         Put_Line ("Recv " & Integer'Image (Bytes));
-         Flush;
 
          declare
             F : String (1 .. Bytes - 1);
             pragma Import (C, F);
             for F'Address use Buf;
          begin
-            Put_Line (F);
+            Put ("Received" & Integer'Image (Bytes) & " bytes: ");
+            Put_Line ("""" & F & """");
          end;
          Status := nn_freemsg (Buf);
-         exit;
       end loop;
    end;
 

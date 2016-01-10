@@ -10,7 +10,7 @@ clean:
 
 check: all
 	./$(EXECUTABLE) & node0=\$! && sleep 1
-	./a.out node1 ipc:///tmp/pipeline.ipc "Hello, World" || true
+	./a.out node1 tcp://127.0.0.1:5019 "Hello, World" || true
 
 generated:  build/generated/nanomsg_nn_h.ads
 
