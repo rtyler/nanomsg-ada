@@ -6,7 +6,7 @@ EXECUTABLE=build/pipeline
 
 all: $(EXECUTABLE)
 clean:
-	$(GPRCLEAN)
+	$(GPRCLEAN) -Ppipeline
 
 check: all build/c_pipeline
 	./t/bin/bats ./t/*.bats
@@ -14,7 +14,7 @@ check: all build/c_pipeline
 generated:  build/generated/nanomsg_nn_h.ads
 
 build/pipeline:  generated
-	$(GPRBUILD)
+	$(GPRBUILD) -Ppipeline
 
 build/c_pipeline: contrib/pipeline.c
 	$(CC) -lnanomsg -o build/c_pipeline contrib/pipeline.c
