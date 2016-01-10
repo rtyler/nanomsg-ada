@@ -1,4 +1,4 @@
-pragma Ada_2005;
+pragma Ada_2012;
 pragma Style_Checks (Off);
 
 with Interfaces.C; use Interfaces.C;
@@ -44,7 +44,7 @@ package nanomsg_nn_h is
    NN_UNIT_MILLISECONDS : constant := 2;  --  /usr/include/nanomsg/nn.h:223
    NN_UNIT_PRIORITY : constant := 3;  --  /usr/include/nanomsg/nn.h:224
    NN_UNIT_BOOLEAN : constant := 4;  --  /usr/include/nanomsg/nn.h:225
-   --  unsupported macro: NN_MSG ((size_t) -1)
+   NN_MSG : constant := size_t'Last;
    --  arg-macro: function NN_CMSG_FIRSTHDR ((mhdr).msg_controllen >= sizeof (struct nn_cmsghdr) ? (struct nn_cmsghdr*) (mhdr).msg_control : (struct nn_cmsghdr*) NULL
    --    return (mhdr).msg_controllen >= sizeof (struct nn_cmsghdr) ? (struct nn_cmsghdr*) (mhdr).msg_control : (struct nn_cmsghdr*) NULL;
    --  arg-macro: procedure NN_CMSG_NXTHDR nn_cmsg_nexthdr_ ((struct nn_msghdr*) (mhdr), (struct nn_cmsghdr*) (cmsg))
@@ -186,7 +186,9 @@ package nanomsg_nn_h is
 
    function nn_recv
      (arg1 : int;
-      arg2 : System.Address;
+     -- using `in out` in 2012 mode since we can allow the underlying C binding
+     -- allocate our object for us
+      arg2 : in out System.Address;
       arg3 : stddef_h.size_t;
       arg4 : int) return int;  -- /usr/include/nanomsg/nn.h:367
    pragma Import (C, nn_recv, "nn_recv");

@@ -24,7 +24,6 @@ procedure Pipeline is
 
    NN_PROTO_PIPELINE : constant := 5;
    NN_PULL : constant := (NN_PROTO_PIPELINE * 16 + 1);
-   NN_MSG : constant := size_t'Last;
 
    Socket : constant int := nn_socket (AF_SP, NN_PULL);
    Status : int;

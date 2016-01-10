@@ -1,6 +1,6 @@
 abstract project Shared is
    for Source_Files use (); --  no source files!
-   for Source_Dirs use (".", "build/generated");
+   for Source_Dirs use (".", "stubs");
    for Object_Dir use "build";
    for Exec_Dir use "build";
 
