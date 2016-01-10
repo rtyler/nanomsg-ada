@@ -1,0 +1,12 @@
+with "shared";
+
+project Pubsub is
+   for Main use ("pubsub.adb");
+
+   for Source_Dirs use Shared'Source_Dirs;
+   for Object_Dir use Shared'Object_Dir;
+   for Exec_Dir use Shared'Exec_Dir;
+
+   package Compiler renames Shared.Compiler;
+end Pubsub;
+
