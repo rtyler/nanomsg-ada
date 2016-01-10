@@ -1,0 +1,13 @@
+
+project Pipeline is
+    for Source_Dirs use (".", "build/generated");
+    for Main use ("pipeline.adb");
+    for Object_Dir use "build";
+    for Exec_Dir use "build";
+
+    package Compiler is
+    for Default_Switches("ada") use
+            ("-g", "-gnateS", "-ftest-coverage", "-gnatv", "-gnatf", "-gnatyabcefhiklmnprst", "-gnat12");
+    end Compiler;
+end Pipeline;
+

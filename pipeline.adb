@@ -2,71 +2,61 @@
 --  Pipeline demo with nanomsg
 --
 
---  #include <assert.h>
---  #include <libc.h>
---  #include <stdio.h>
---  #include <nanomsg/nn.h>
---  #include <nanomsg/pipeline.h>
---
---  #define NODE0 "node0"
---  #define NODE1 "node1"
---
---  int node0 (const char *url)
---  {
---    int sock = nn_socket (AF_SP, NN_PULL);
---    assert (sock >= 0);
---    assert (nn_bind (sock, url) >= 0);
---    while (1)
---      {
---        char *buf = NULL;
---        int bytes = nn_recv (sock, &buf, NN_MSG, 0);
---        assert (bytes >= 0);
---        printf ("NODE0: RECEIVED \"%s\"\n", buf);
---        nn_freemsg (buf);
---      }
---  }
---
---  int node1 (const char *url, const char *msg)
---  {
---    int sz_msg = strlen (msg) + 1; // '\0' too
---    int sock = nn_socket (AF_SP, NN_PUSH);
---    assert (sock >= 0);
---    assert (nn_connect (sock, url) >= 0);
---    printf ("NODE1: SENDING \"%s\"\n", msg);
---    int bytes = nn_send (sock, msg, sz_msg, 0);
---    assert (bytes == sz_msg);
---    return nn_shutdown (sock, 0);
---  }
---
---  int main (const int argc, const char **argv)
---  {
---    if (strncmp (NODE0, argv[1], strlen (NODE0)) == 0 && argc > 1)
---      return node0 (argv[2]);
---    else if (strncmp (NODE1, argv[1], strlen (NODE1)) == 0 && argc > 2)
---      return node1 (argv[2], argv[3]);
---    else
---      {
---        fprintf (stderr, "Usage: pipeline %s|%s <URL> <ARG> ...'\n",
---                 NODE0, NODE1);
---        return 1;
---      }
---  }
-
-
+with Ada.Characters.Latin_1;
+with Ada.Command_Line;
 with Ada.Text_IO;
+with Interfaces.C,
+   Interfaces.C.Strings;
+with System,
+   System.Address_To_Access_Conversions,
+   System.Address_Image;
+
+use Ada.Text_IO;
+
 with nanomsg_nn_h;
 use nanomsg_nn_h;
-with Interfaces.C;
-use Interfaces.C;
+
+use Interfaces.C,
+   Interfaces.C.Strings;
 
 procedure Pipeline is
    pragma Linker_Options ("-lnanomsg");
 
    NN_PROTO_PIPELINE : constant := 5;
    NN_PULL : constant := (NN_PROTO_PIPELINE * 16 + 1);
+   NN_MSG : constant := size_t'Last;
 
    Socket : constant int := nn_socket (AF_SP, NN_PULL);
+   Status : int;
 begin
+   Put_Line ("Running pipeline");
+   Put_Line ("Socket " & int'Image (Socket));
 
-   null;
+   Status := nn_bind (Socket,
+                      New_String ("ipc:///tmp/pipeline.ipc"));
+
+   Put_Line ("Status: " & int'Image (Socket));
+
+   declare
+      Bytes : Integer := 0;
+      Buf : aliased System.Address;
+   begin
+      loop
+         Bytes := Integer (nn_recv (Socket, Buf, NN_MSG, 0));
+         Put_Line ("Recv " & Integer'Image (Bytes));
+         Flush;
+
+         declare
+            F : String (1 .. Bytes - 1);
+            pragma Import (C, F);
+            for F'Address use Buf;
+         begin
+            Put_Line (F);
+         end;
+         Status := nn_freemsg (Buf);
+         exit;
+      end loop;
+   end;
+
+   Ada.Command_Line.Set_Exit_Status (0);
 end Pipeline;
