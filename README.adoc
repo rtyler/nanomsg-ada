@@ -1,0 +1,4 @@
+= nanomsg-ada
+
+Just some experimental bindings to the link:http://nanomsg.org[nanomsg] C
+library
