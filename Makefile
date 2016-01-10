@@ -9,7 +9,7 @@ clean:
 	$(GPRCLEAN)
 
 check: all build/c_pipeline
-	./t/test-pipeline.sh
+	./t/bin/bats ./t/*.bats
 
 generated:  build/generated/nanomsg_nn_h.ads
 
