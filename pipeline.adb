@@ -2,22 +2,16 @@
 --  Pipeline demo with nanomsg
 --
 
-with Ada.Characters.Latin_1;
-with Ada.Command_Line;
 with Ada.Text_IO;
 with Interfaces.C,
    Interfaces.C.Strings;
-with System,
-   System.Address_To_Access_Conversions,
-   System.Address_Image;
-
-use Ada.Text_IO;
-
+with System;
 with nanomsg_nn_h;
 
 procedure Pipeline is
    pragma Linker_Options ("-lnanomsg");
 
+   use Ada.Text_IO;
    use nanomsg_nn_h;
    use Interfaces.C,
       Interfaces.C.Strings;
@@ -54,6 +48,4 @@ begin
          Status := nn_freemsg (Buf);
       end loop;
    end;
-
-   Ada.Command_Line.Set_Exit_Status (0);
 end Pipeline;
